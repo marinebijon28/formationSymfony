@@ -20,7 +20,10 @@ class ChangePasswordType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'disabled' => true,
-                'label' => 'Mon adresse email'
+                'label' => 'Mon adresse email',
+                'label_attr' => [
+                    'class' => 'connected'
+                ]
             ])
             ->add('firstName', TextType::class, [
                 'disabled' => true,
