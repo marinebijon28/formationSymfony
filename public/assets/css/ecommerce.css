@@ -38,3 +38,9 @@ body {
 .products-item .products-price {
     font-size : 14px;
 }
+
+.cart-icon{
+    height : 20px;
+    padding-left : 10px;
+    padding-top : 3px;
+}
