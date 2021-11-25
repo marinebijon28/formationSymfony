@@ -2,6 +2,10 @@
 
 {% block title %}{% endblock %}
 
+{% block javascript %}
+    <script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
 {% block content %}
     <h2>Récapitulatif</h2>
     <p>Vérifiez vos informations avant de payer votre commande</p>
@@ -19,7 +23,7 @@
                 <br/>
                 {{ carrier.description }}
                 <br/>
-                {{ carrier.price | number_format(2, ',', '.') }} € 
+                {{ (carrier.price/100) | number_format(2, ',', '.') }} € 
             </div>
         </div>
         <div class="col-md-6 label">
@@ -54,10 +58,41 @@
             </div>
             <hr class="mt-2">
             <strong>Sous-total :</strong> {{ (total)|number_format(2, ',', '.') }} € <br/>
-            <strong>Livraison :</strong> {{ (carrier.price)|number_format(2, ',', '.') }} € <br/>  
-            <strong>Total : </strong>{{ (total + carrier.price)|number_format(2, ',', '.') }} €  
+            <strong>Livraison :</strong> {{ (carrier.price / 100)|number_format(2, ',', '.') }} € <br/>  
+            <strong>Total : </strong>{{ (total + carrier.price / 100)|number_format(2, ',', '.') }} €  
             <hr>
-            <a href="" class="btn btn-success btn-block mt-3">Payer {{ (total + carrier.price)|number_format(2, ',', '.') }} €  </a>
+            <a id="checkout-button" class="btn btn-success btn-block mt-3">Payer {{ (total + carrier.price /100)|number_format(2, ',', '.') }} €</a>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        let stripe = Stripe("pk_test_51JzGttCUvPaaE3Tr8sd23m2E7oKUHJ8KRa7LsDDpwEs6TWylSKB1sRMsafsFfZFhfBN6U40ho34mtfIB33aYVSDW00iZ6KVAd8")
+        let checkoutButton = document.getElementById("checkout-button")
+
+        checkoutButton.addEventListener("click", function()
+        {
+            fetch("/stripe/{{ reference }}", {
+                method:"POST",
+            })
+            .then(function(response) {
+                return response.json()
+            })
+            .then(function(session) {
+                console.log(session)
+                if (session.error == 'order')
+                    window.location.replace('{{ path('order') }}')
+                else
+                    return stripe.redirectToCheckout({sessionId : session.id})
+            })
+            .then(function(result) {
+                alert(result.error.message)
+            })
+            .catch(function(error) {
+                console.log("Error :")
+                console.log(error)
+            });
+        });
+    </script>
 {% endblock %}
