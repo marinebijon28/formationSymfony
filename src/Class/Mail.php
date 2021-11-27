@@ -37,8 +37,8 @@ class Mail
                 ]
             ]
         ];
-  $response = $mj->post(Resources::$Email, ['body' => $body]);
-  $response->success();
+        $response = $mj->post(Resources::$Email, ['body' => $body]);
+        $response->success();
     }
 
 }
